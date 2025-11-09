@@ -1,0 +1,35 @@
+{
+  "name": "Codespace with gp + defang",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "features": {},
+  "postCreateCommand": [
+    "echo 'Updating apt and installing network tools (dnsutils ping curl)...'",
+    "sudo apt-get update -y || true",
+    "sudo apt-get install -y dnsutils iputils-ping curl ca-certificates || true",
+    "",
+    "echo 'Attempting to install Gitpod CLI (gp) for this architecture...'",
+    "bash -lc \"if [ \\\"$(uname -m)\\\" = \\\"x86_64\\\" ]; then curl -fsSL https://releases.gitpod.io/cli/stable/gitpod-linux-amd64 | sudo tee /usr/local/bin/gp > /dev/null; elif [ \\\"$(uname -m)\\\" = \\\"aarch64\\\" ] || [ \\\"$(uname -m)\\\" = \\\"arm64\\\" ]; then curl -fsSL https://releases.gitpod.io/cli/stable/gitpod-linux-arm64 | sudo tee /usr/local/bin/gp > /dev/null; else echo 'Unsupported arch for automatic gp install'; fi; sudo chmod +x /usr/local/bin/gp || true\"",
+    "",
+    "echo 'Attempting to install Defang CLI (if network allows)...'",
+    "bash -lc \"curl -fsSL https://get.defang.io | sudo bash || echo 'Defang install skipped (network or URL problem)'\"",
+    "",
+    "echo 'Post-create complete (install commands were tolerant to network failures).'"
+  ],
+  "postStartCommand": [
+    "echo 'Verifying installations...'",
+    "if command -v gp >/dev/null 2>&1; then gp --version || true; else echo 'gp not found'; fi",
+    "if command -v defang >/dev/null 2>&1; then defang version || true; else echo 'defang not found'; fi"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "github.codespaces",
+        "ms-vscode-remote.remote-containers"
+      ],
+      "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash"
+      }
+    }
+  },
+  "remoteUser": "vscode"
+}
